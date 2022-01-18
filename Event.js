@@ -1,8 +1,21 @@
-const Webhook = require("../events/webhook");
 const config = require("hyarcade-config").fromJSON();
-const {
-  MessageEmbed
-} = require("discord.js");
+const { MessageEmbed, WebhookClient } = require("discord.js");
+
+/**
+ * 
+ * @param {*} webhook 
+ * @param {*} msg 
+ */
+async function sendWebhookMsg (webhook, msg) {
+  const hook = new WebhookClient({ id: webhook.id, token: webhook.token });
+
+  const msgObj = msg ?? {};
+  msgObj.username = webhook.username;
+  msgObj.avatarURL = webhook.pfp;
+
+  await hook.send(msgObj);
+  await hook.destroy();
+}
 
 class AccountEvent {
     name = "";
@@ -55,15 +68,15 @@ class AccountEvent {
 
     async toDiscord () {
       if(this.type == "PG") {
-        await Webhook.sendBasic(this.toString(), config.events[this.type].webhook);
+        await sendWebhookMsg(config.events[this.type].webhook, { content: this.toString() });
       } else if(this.type == "HITWPB") {
         const embed = await this.getHitWEmbed();
-        await Webhook.sendBasicEmbed("", [embed], config.events.HITW.webhook);
+        await sendWebhookMsg(config.events[this.type].webhook, { embeds: [embed] });
       } else if(this.type == "HITW") {
-        await Webhook.sendBasic(this.toString(), config.events.HITW.webhook);
+        await sendWebhookMsg(config.events[this.type].webhook, { content: this.toString() });
       } else {
         if(config.events[this.type]) {
-          await Webhook.sendBasic(this.toString(), config.events[this.type].webhook);
+          await sendWebhookMsg(config.events[this.type].webhook, { content: this.toString() });
         }
       }
     }

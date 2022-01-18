@@ -2,7 +2,7 @@ const logger = require("hyarcade-logger");
 const fs = require("fs-extra");
 const { Message } = require("discord.js");
 const { Interaction } = require("discord.js");
-const CommandResponse = require("../discord/Utils/CommandResponse");
+const CommandResponse = require("./CommandResponse");
 const Logger = require("hyarcade-logger");
 
 let trustedUsers = undefined;

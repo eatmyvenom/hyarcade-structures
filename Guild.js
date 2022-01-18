@@ -1,7 +1,63 @@
 const { HypixelApi } = require("hyarcade-requests");
 const Account = require("hyarcade-requests/types/Account");
-const utils = require("../utils");
-const { logger } = require("../utils");
+const logger = require("hyarcade-logger");
+const cfg = require("hyarcade-config").fromJSON();
+const { parseChunked } = require("@discoveryjs/json-ext");
+const http = require("http");
+const https = require("https");
+
+/**
+ * Read JSON data as a stream from a url
+ * This is used as a stream due to the the string length limitations of nodejs/v8
+ * 
+ * 
+ * @param {URL} url 
+ */
+function readJSONStream (url) {
+  let reqModule;
+  if(url.protocol == "https:") {
+    reqModule = https;
+  } else {
+    reqModule = http;
+  }
+
+  return new Promise((resolve, rejects) => {
+    reqModule.get(url, { headers: { Authorization: cfg.dbPass } }, (res) => {
+      parseChunked(res)
+        .then(resolve)
+        .catch(rejects);
+    });
+  });
+}
+
+/**
+ * @param {string} file
+ * @param {string} fields
+ * @returns {object} Object of whatever was returned by the database
+ */
+async function readDB (file, fields) {
+  let fileData;
+  const url = new URL("db", cfg.dbUrl);
+  const path = `${file}`;
+  url.searchParams.set("path", path);
+
+  if(fields != undefined) {
+    url.searchParams.set("fields", fields.join(","));
+  }
+
+  logger.debug(`Fetching ${url.searchParams.toString()} from database`);
+
+  try {
+    fileData = await readJSONStream(url);
+  } catch (e) {
+    logger.err("Can't connect to database");
+    logger.err(e.stack);
+    return {};
+  }
+  logger.debug("Data fetched!");
+  return fileData;
+}
+
 let allAccs;
 
 /**
@@ -79,7 +135,7 @@ class Guild {
     async updateMemberData () {
 
       if(allAccs == undefined) {
-        allAccs = await utils.readDB("accounts");
+        allAccs = await readDB("accounts");
       }
 
       const data = await this.getGuild();

@@ -68,13 +68,6 @@ function numberify (str) {
   return Number(str);
 }
 
-module.exports = function Gld (accounts) {
-  if(accounts != undefined) {
-    allAccs = accounts;
-  }
-  return Guild;
-};
-
 class Guild {
 
   /**
@@ -232,3 +225,10 @@ class Guild {
       }, this);
     }
 }
+
+module.exports = function Gld (accounts) {
+  if(accounts != undefined) {
+    allAccs = accounts;
+  }
+  return Guild;
+};

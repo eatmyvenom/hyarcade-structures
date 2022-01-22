@@ -89,7 +89,7 @@ class AccountEvent {
       const embed = new MessageEmbed()
         .setAuthor({ name: this.name, iconURL: thumb })
         .setThumbnail(avatar)
-        .setFooter(`UUID: ${this.uuid}`)
+        .setFooter({ text: `UUID: ${this.uuid}` })
         .setColor(0x0066cc)
         .setTitle(`${this.name} just got a new **${this.modifier}** Personal Best!`)
         .addField("Old PB", `**${this.oldAmnt}**`, true)

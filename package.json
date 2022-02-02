@@ -6,11 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    "hyarcade-logger": "github:eatmyvenom/hyarcade-logger",
-    "hyarcade-requests": "github:eatmyvenom/hyarcade-requests",
-    "hyarcade-structures": "github:eatmyvenom/hyarcade-structures"
-  },
+  "dependencies": {},
   "author": "EatMyVenom",
   "license": "MPL-2.0"
 }

@@ -1,18 +1,17 @@
-const { HypixelApi } = require("hyarcade-requests");
-const Account = require("hyarcade-requests/types/Account");
 const logger = require("hyarcade-logger");
+const { HypixelApi } = require("hyarcade-requests");
 const Database = require("hyarcade-requests/Database");
+const Account = require("hyarcade-requests/types/Account");
 
 /**
  * @param {string} str
  * @returns {number}
  */
-function numberify (str) {
+function numberify(str) {
   return Number(str);
 }
 
 class Guild {
-
   /**
    *
    * @type {Account[]}
@@ -59,7 +58,7 @@ class Guild {
    * @param {string} uuid
    * @memberof Guild
    */
-  constructor (uuid) {
+  constructor(uuid) {
     this.uuid = uuid;
   }
 
@@ -68,7 +67,7 @@ class Guild {
    *
    * @memberof Guild
    */
-  async updateMemberData () {
+  async updateMemberData() {
     const data = await this.getGuild();
     this.name = data?.guild?.name ?? "INVALID-NAME";
     logger.info(`Updating data for ${this.name}`);
@@ -77,15 +76,15 @@ class Guild {
     this.gxp = data?.guild?.exp ?? 0;
     this.color = data?.guild?.tagColor ?? "GREY";
     this.tag = data?.guild?.tag ?? "NONE";
-    this.games = data?.guild?.preferredGames ?? [ "ARCADE" ];
+    this.games = data?.guild?.preferredGames ?? ["ARCADE"];
     this.createTime = data?.guild?.created ?? 0;
 
     const gmembers = data?.guild?.members ?? [];
-    for(let i = 0; i < gmembers.length; i += 1) {
+    for (let i = 0; i < gmembers.length; i += 1) {
       const gamer = await Database.account(gmembers[i].uuid);
 
       // dont add empty accounts
-      if(gamer != undefined) {
+      if (gamer != undefined) {
         this.memberUUIDs.push(gamer.uuid);
         this.members.push(gamer);
       }
@@ -98,7 +97,7 @@ class Guild {
    * @returns {object}
    * @memberof Guild
    */
-  async getGuild () {
+  async getGuild() {
     try {
       return await HypixelApi.guild(this.uuid);
     } catch (e) {
@@ -114,12 +113,12 @@ class Guild {
    * @returns {number}
    * @memberof Guild
    */
-  async updateWins () {
+  async updateWins() {
     await this.updateMemberData();
     this.updateMemberStats();
 
     // TODO: Use this.members.forEach
-    for(let i = 0; i < this.members.length; i += 1) {
+    for (let i = 0; i < this.members.length; i += 1) {
       const member = this.members[i];
       this.wins += member.wins;
       this.arcadeCoins += member.arcadeCoins;
@@ -148,8 +147,8 @@ class Guild {
     return this.wins;
   }
 
-  updateMemberStats () {
-    this.members.forEach((member) => {
+  updateMemberStats() {
+    this.members.forEach(member => {
       const obj = {};
       obj.wins = member.combinedArcadeWins;
       obj.rank = member.rank;

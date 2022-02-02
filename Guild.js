@@ -29,7 +29,6 @@ class Guild {
   tag = "";
   games = [];
   createTime = 0;
-  wins = 0;
   arcadeCoins = 0;
   combinedAP = 0;
   arcadeWins = 0;
@@ -80,8 +79,8 @@ class Guild {
     this.createTime = data?.guild?.created ?? 0;
 
     const gmembers = data?.guild?.members ?? [];
-    for (let i = 0; i < gmembers.length; i += 1) {
-      const gamer = await Database.account(gmembers[i].uuid);
+    for (const gmember of gmembers) {
+      const gamer = await Database.account(gmember.uuid);
 
       // dont add empty accounts
       if (gamer != undefined) {
@@ -100,8 +99,8 @@ class Guild {
   async getGuild() {
     try {
       return await HypixelApi.guild(this.uuid);
-    } catch (e) {
-      logger.err(e.stack);
+    } catch (error) {
+      logger.err(error.stack);
       logger.err(this.uuid);
       return await this.getGuild();
     }
@@ -148,7 +147,7 @@ class Guild {
   }
 
   updateMemberStats() {
-    this.members.forEach(member => {
+    for (const member of this.members) {
       const obj = {};
       obj.wins = member.combinedArcadeWins;
       obj.rank = member.rank;
@@ -157,7 +156,7 @@ class Guild {
       obj.online = member.isLoggedIn;
       obj.plusColor = member.plusColor;
       this.membersStats.push(obj);
-    }, this);
+    }
   }
 }
 

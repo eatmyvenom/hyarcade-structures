@@ -5,13 +5,13 @@ const logger = require("hyarcade-logger");
 const Logger = require("hyarcade-logger");
 const CommandResponse = require("./CommandResponse");
 
-let trustedUsers = undefined;
+let trustedUsers;
 
 module.exports = class Command {
   name = "";
   aliases = [];
   allowed = [];
-  rateLimit = 5000;
+  rateLimit = 7500;
   executors = {};
 
   constructor(aliases, allowed, callback, rateLimit = 5000) {
@@ -28,11 +28,7 @@ module.exports = class Command {
   }
 
   async callback(args, rawMsg, interaction) {
-    Logger.debug(
-      `Command Run\nName : ${this.name}\nArgs : ${args}\nMessage : ${rawMsg.content}\nInteraction? : ${
-        interaction != undefined
-      }`,
-    );
+    Logger.debug(`Command Run\nName : ${this.name}\nArgs : ${args}\nMessage : ${rawMsg.content}\nInteraction? : ${interaction != undefined}`);
     return new CommandResponse("Bot broke :(");
   }
 
@@ -54,10 +50,8 @@ module.exports = class Command {
 
     let rate = this.rateLimit;
 
-    if (interaction != undefined && !interaction.isCommand()) {
-      if (interaction.isMessageComponent()) {
-        rate = Math.max(this.rateLimit / 4, 1000);
-      }
+    if (interaction != undefined && !interaction.isCommand() && interaction.isMessageComponent()) {
+      rate = Math.max(this.rateLimit / 4, 1000);
     }
 
     if (trustedUsers.includes(author) || author == "156952208045375488") {
@@ -68,37 +62,21 @@ module.exports = class Command {
       logger.warn(`${author} has been rate limited for ${this.name}`);
       if (interaction != undefined) {
         if (interaction.isCommand()) {
-          return new CommandResponse(
-            "Sorry, you can't run this command yet. Please wait a few seconds!",
-            undefined,
-            undefined,
-            undefined,
-            false,
-            true,
-          );
+          return new CommandResponse("Sorry, you can't run this command yet. Please wait a few seconds!", undefined, undefined, undefined, false, true);
         }
         await interaction.deferUpdate();
         return;
       }
-      return new CommandResponse(
-        "Sorry, you can't run this command yet. Please wait a few seconds!",
-        undefined,
-        undefined,
-        undefined,
-      );
+      return new CommandResponse("Sorry, you can't run this command yet. Please wait a few seconds!", undefined, undefined, undefined);
     }
     this.executors[author] = Date.now();
 
     if (this.allowed.includes("%trusted%")) {
-      this.allowed = this.allowed.concat(trustedUsers);
+      this.allowed = [...this.allowed, ...trustedUsers];
       this.allowed = this.allowed.filter(t => t != "%trusted%");
     }
     if (!this.allowed.includes(author) && !this.allowed.includes("*")) {
-      logger.info(
-        `${author} tried to run the ${
-          this.name
-        } command without permissions... only ${this.allowed.toString()} are allowed`,
-      );
+      logger.info(`${author} tried to run the ${this.name} command without permissions... only ${this.allowed.toString()} are allowed`);
       return {
         res: "",
       };

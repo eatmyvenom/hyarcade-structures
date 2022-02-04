@@ -12,6 +12,8 @@ function numberify(str) {
 }
 
 class Guild {
+  input = "";
+
   /**
    *
    * @type {Account[]}
@@ -54,11 +56,11 @@ class Guild {
   /**
    * Creates an instance of Guild.
    *
-   * @param {string} uuid
+   * @param {string} input
    * @memberof Guild
    */
-  constructor(uuid) {
-    this.uuid = uuid;
+  constructor(input) {
+    this.input = input;
   }
 
   /**
@@ -68,6 +70,7 @@ class Guild {
    */
   async updateMemberData() {
     const data = await this.getGuild();
+    this.uuid = data?._id ?? "";
     this.name = data?.guild?.name ?? "INVALID-NAME";
     logger.info(`Updating data for ${this.name}`);
 
@@ -98,10 +101,10 @@ class Guild {
    */
   async getGuild() {
     try {
-      return await HypixelApi.guild(this.uuid);
+      return await HypixelApi.guild(this.input);
     } catch (error) {
       logger.err(error.stack);
-      logger.err(this.uuid);
+      logger.err(this.input);
       return await this.getGuild();
     }
   }

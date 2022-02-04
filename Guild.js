@@ -152,11 +152,11 @@ class Guild {
   updateMemberStats() {
     for (const member of this.members) {
       const obj = {};
-      obj.wins = member.combinedArcadeWins;
-      obj.rank = member.rank;
+      obj.wins = member.arcadeWins;
       obj.name = member.name;
       obj.uuid = member.uuid;
-      obj.online = member.isLoggedIn;
+      obj.rank = member.rank;
+      obj.mvpColor = member.mvpColor;
       obj.plusColor = member.plusColor;
       this.membersStats.push(obj);
     }

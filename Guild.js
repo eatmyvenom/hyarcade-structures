@@ -70,7 +70,7 @@ class Guild {
    */
   async updateMemberData() {
     const data = await this.getGuild();
-    this.uuid = data?._id ?? "";
+    this.uuid = data?.guild?._id ?? "";
     this.name = data?.guild?.name ?? "INVALID-NAME";
     logger.info(`Updating data for ${this.name}`);
 

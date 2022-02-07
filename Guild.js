@@ -52,6 +52,7 @@ class Guild {
   pixelPaintersWins = 0;
   partyGamesWins = 0;
   simWins = 0;
+  updateTime = 0;
 
   /**
    * Creates an instance of Guild.
@@ -83,7 +84,7 @@ class Guild {
 
     const gmembers = data?.guild?.members ?? [];
     for (const gmember of gmembers) {
-      const gamer = await Database.account(gmember.uuid);
+      const gamer = await Database.account(gmember.uuid, undefined, true);
 
       // dont add empty accounts
       if (gamer != undefined) {
@@ -91,6 +92,8 @@ class Guild {
         this.members.push(gamer);
       }
     }
+
+    this.updateTime = Date.now();
   }
 
   /**

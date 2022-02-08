@@ -64,7 +64,9 @@ module.exports = class Command {
         if (interaction.isCommand()) {
           return new CommandResponse("Sorry, you can't run this command yet. Please wait a few seconds!", undefined, undefined, undefined, false, true);
         }
-        await interaction.deferUpdate();
+        if (!interaction.deferred) {
+          await interaction.deferUpdate();
+        }
         return;
       }
       return new CommandResponse("Sorry, you can't run this command yet. Please wait a few seconds!", undefined, undefined, undefined);

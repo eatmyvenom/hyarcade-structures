@@ -87,7 +87,7 @@ class Guild {
       const gamer = await Database.account(gmember.uuid, undefined, true);
 
       // dont add empty accounts
-      if (gamer != undefined) {
+      if (gamer != undefined && gamer.name != "INVALID-NAME") {
         this.memberUUIDs.push(gamer.uuid);
         this.members.push(gamer);
       }

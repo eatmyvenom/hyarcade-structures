@@ -73,8 +73,12 @@ class Guild {
     const data = await this.getGuild();
     this.uuid = data?.guild?._id ?? "";
     this.name = data?.guild?.name ?? "INVALID-NAME";
-    logger.info(`Updating data for ${this.name}`);
 
+    if (this.name == "INVLAID-NAME") {
+      return;
+    }
+
+    logger.log(`Updating member data for ${this.name}`);
     this.arcadeEXP = data?.guild?.guildExpByGameType?.ARCADE ?? 0;
     this.gxp = data?.guild?.exp ?? 0;
     this.color = data?.guild?.tagColor ?? "GREY";
@@ -122,7 +126,6 @@ class Guild {
     await this.updateMemberData();
     this.updateMemberStats();
 
-    // TODO: Use this.members.forEach
     for (let i = 0; i < this.members.length; i += 1) {
       const member = this.members[i];
       this.wins += member?.wins ?? 0;
